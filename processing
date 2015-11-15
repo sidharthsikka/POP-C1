@@ -1,0 +1,178 @@
+import processing.serial.*;
+
+PrintWriter output;
+PShape s;
+
+int red=1, green=1, yellow=1, count=0;
+double x=0, y=0, z = 0;
+Light[] lights=new Light[16];
+
+Serial myPort;
+
+void setup()
+{
+  size(600,600,P3D);
+  background(0);
+  stroke(120);
+  noFill();
+  s = createShape();
+  s.beginShape();
+  s.vertex(300, 300);
+  s.vertex(255, 345);
+  s.vertex(255, 465);
+  s.vertex(300, 510);
+  s.vertex(360, 435);
+  s.vertex(390, 480);
+  s.vertex(420, 435);
+  s.vertex(480, 510);
+  s.vertex(525, 465);
+  s.vertex(525, 345);
+  s.vertex(480, 300);
+  s.endShape(CLOSE);
+  for(int i=0;i<16;i++)
+  {
+    lights[i]=new Light(i,200);
+  }
+  lights[0].position(290,475);
+  lights[1].position(325,450);
+  lights[2].position(360,410);
+  lights[3].position(390,450);
+  lights[4].position(420,410);
+  lights[5].position(450,450);
+  lights[6].position(485,475);
+  lights[7].position(490,425);
+  lights[8].position(490,375);
+  lights[9].position(485,330);
+  lights[10].position(435,325);
+  lights[11].position(390,325);
+  lights[12].position(340,325);
+  lights[13].position(290,330);
+  lights[14].position(280,375);
+  lights[15].position(280,425);
+  output = createWriter("data.txt");
+  myPort = new Serial(this, Serial.list()[0], 115200);
+  myPort.bufferUntil('\n');
+}
+
+void draw() 
+{
+  shape(s, 0, 0);
+  lights[red].changeColour(255,0,0);
+  if(red-1!=green && red-1!=yellow)
+  {
+    lights[red-1].changeColour(255,255,255);
+  }
+  if(red==1 && green!=15 && yellow!=15)
+  {
+    lights[15].changeColour(255,255,255);
+  }
+  lights[green].changeColour(0,255,0);
+  if(green-1!=red && green-1!=yellow)
+  {
+    lights[green-1].changeColour(255,255,255);
+  }
+   if(green==1 && red!=15 && yellow!=15)
+  {
+    lights[15].changeColour(255,255,255);
+  }
+  lights[yellow].changeColour(255,255,0);
+  if(yellow-1!=red && yellow-1!=green)
+  {
+    lights[yellow-1].changeColour(255,255,255);
+  }
+   if(yellow==1 && green!=15 && red!=15)
+  {
+    lights[15].changeColour(255,255,255);
+  }
+    while(count!=0)
+    {
+      if(red==green)
+      {
+        for(int i=0;i<16;i++)
+        {
+          lights[i].changeColour(255,0,0);
+        }
+      }
+      else if(green==yellow)
+      {
+           for(int i=0;i<16;i++)
+        {
+          lights[i].changeColour(255,255,0);
+        }
+      }
+      
+    }
+  output.println(red + "\t" + green + "\t"+ yellow + "\t"+ x + "\t"+ y + "\t"+ z + "\t"+ count +"\t");
+}
+
+ void serialEvent(Serial myPort)
+ {
+ String inString = myPort.readStringUntil('\n');
+
+ if (inString != null)
+ {
+ inString = trim(inString);
+ float[] sensors = float(split(inString, ","));
+ if (sensors.length >=7)
+     {
+       red = (int)sensors[0];
+       println(red);
+       green = (int)sensors[1];
+       println(green);
+       yellow = (int)sensors[2];
+       println(yellow);
+       x = sensors[3];
+       println(x);
+       y = sensors[4];
+       println(y);
+       z = sensors[5];
+       println(z);
+       count = (int)sensors[6];
+       println(count);
+     }
+   }
+}
+void keyPressed()
+{
+  output.flush();
+  output.close();
+  exit();
+}
+
+class Light
+{
+  int id;
+  int colour1;
+  int colour2;
+  int colour3;
+  int x;
+  int y;
+  Light(int id,int colour)
+  {
+    this.id=id;
+    colour1=colour;
+  }
+  int id()
+  {
+    return id;
+  }
+  void position(int x,int y,int colour1,int colour2,int colour3)
+  {
+    fill(colour1,colour2,colour3);
+    ellipse(x,y,10,10);
+  }
+  void position(int x,int y)
+  {
+    this.x=x;
+    this.y=y;
+    fill(colour1);
+    ellipse(x,y,10,10);
+  }
+  void changeColour(int colour1,int colour2,int colour3)
+  {
+    this.colour1=colour1;
+    this.colour2=colour2;
+    this.colour3=colour3;
+    this.position(this.x,this.y,colour1,colour2,colour3);
+  }
+}
