@@ -1,0 +1,104 @@
+#include <EngduinoAccelerometer.h>
+#include <Wire.h> 
+#include <EngduinoLEDs.h> 
+#include <EngduinoButton.h> 
+
+void setup() {
+  EngduinoAccelerometer.begin(); 
+  EngduinoLEDs.begin(); 
+  EngduinoButton.begin(); 
+  randomSeed(analogRead(0));
+}
+
+void loop() {
+  int red_LED,green_LED,yellow_LED,No_of_rounds,count;
+  LOOP:
+  No_of_rounds=0;
+  count=0;
+  red_LED=random(11,16);//starting position of each LED is random in such a way that it is always red then green then yellow
+  green_LED=random(1,6);
+  yellow_LED=random(7,11);
+  float accelerations[3];
+  EngduinoLEDs.setLED(red_LED,RED);
+  EngduinoLEDs.setLED(green_LED,GREEN);
+  EngduinoLEDs.setLED(yellow_LED,YELLOW); 
+  while(red_LED!=green_LED)
+  {
+    delay(500-(No_of_rounds*10));//goes faster after each round
+    EngduinoAccelerometer.xyz(accelerations);
+    float x = accelerations[0];//acceleration in each respective axis axis
+    float y = accelerations[1];
+    float z = accelerations[2];
+    if(x>0.2 && green_LED>=6 && green_LED<=8 && x>y)
+    {
+      green_LED++;
+    }
+    else if( x<-0.2 && green_LED>=13 && green_LED<=15 && y>x)
+    {
+      green_LED++;
+    }
+    else if(y>0.2 && green_LED>=0 && green_LED<=5 && y>x)
+    {
+      green_LED++;
+    }
+    else if(y<-0.2 && green_LED>=9 && green_LED<=12 && x>y)
+    {
+      green_LED++;
+    }
+    red_LED++;
+    yellow_LED++;
+    if(green_LED>=16)
+    {
+      green_LED=1;
+    }
+    if(yellow_LED>=16)
+    {
+      yellow_LED=1;
+    }
+    if(red_LED>=16)
+    {
+      red_LED=1;
+      No_of_rounds++;
+    }
+    if(red_LED==green_LED)
+    {
+      count=1;
+      print(red_LED,green_LED,yellow_LED,x,y,z,count);
+      EngduinoLEDs.setAll(RED);
+      EngduinoButton.waitUntilPressed();
+      EngduinoLEDs.setAll(OFF);
+      goto LOOP;//to restart the game
+    }
+    if(green_LED==yellow_LED)
+    {
+      count=1;
+      print(red_LED,green_LED,yellow_LED,x,y,z,count);
+      EngduinoLEDs.setAll(YELLOW);
+      EngduinoButton.waitUntilPressed();
+      EngduinoLEDs.setAll(OFF);
+      goto LOOP;
+    }
+    EngduinoLEDs.setAll(OFF);
+    EngduinoLEDs.setLED(red_LED,RED);
+    EngduinoLEDs.setLED(green_LED,GREEN);
+    EngduinoLEDs.setLED(yellow_LED,YELLOW); 
+    print(red_LED,green_LED,yellow_LED,x,y,z,count);
+  }
+}
+
+void print(int red_LED,int green_LED,int yellow_LED,float x,float y,float z,int count)
+{
+    Serial.print(red_LED);
+    Serial.print(",");
+    Serial.print(green_LED);
+    Serial.print(",");
+    Serial.print(yellow_LED);
+    Serial.print(",");
+    Serial.print(x);
+    Serial.print(",");
+    Serial.print(y);
+    Serial.print(",");
+    Serial.print(z);
+    Serial.print(",");
+    Serial.println(count);
+}
