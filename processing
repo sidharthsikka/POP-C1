@@ -1,62 +1,114 @@
 import processing.serial.*;
 
 PrintWriter output;
-PShape s;
+PShape engduino,main,light,light1,light2,light3,light4,light5,light6,light7,light8,light9,light10,light11,light12,light13,light14,light15;
 
 int red=1, green=1, yellow=1, count=0;
-double x=0, y=0, z = 0;
+float x=0, y=0, z = 0;
 Light[] lights=new Light[16];
 
 Serial myPort;
 
 void setup()
 {
-  size(600,600,P3D);
+  size(800,800,P3D);
   background(0);
   stroke(120);
-  noFill();
-  s = createShape();
-  s.beginShape();
-  s.vertex(300, 300);
-  s.vertex(255, 345);
-  s.vertex(255, 465);
-  s.vertex(300, 510);
-  s.vertex(360, 435);
-  s.vertex(390, 480);
-  s.vertex(420, 435);
-  s.vertex(480, 510);
-  s.vertex(525, 465);
-  s.vertex(525, 345);
-  s.vertex(480, 300);
-  s.endShape(CLOSE);
+  engduino = createShape(GROUP);
+  main = createShape();
+  main.beginShape();
+  main.vertex(300, 300);
+  main.vertex(255, 345);
+  main.vertex(255, 465);
+  main.vertex(300, 510);
+  main.vertex(360, 435);
+  main.vertex(390, 480);
+  main.vertex(420, 435);
+  main.vertex(480, 510);
+  main.vertex(525, 465);
+  main.vertex(525, 345);
+  main.vertex(480, 300);
+  main.endShape(CLOSE);
+  light=createShape(ELLIPSE,290,475,10,10);
+  light.setFill(color(255));
+  light1=createShape(ELLIPSE,325,450,10,10);
+  light1.setFill(color(255));
+  light2=createShape(ELLIPSE,360,410,10,10);
+  light2.setFill(color(255));
+  light3=createShape(ELLIPSE,390,450,10,10);
+  light3.setFill(color(255));
+  light4=createShape(ELLIPSE,420,410,10,10);
+  light4.setFill(color(255));
+  light5=createShape(ELLIPSE,450,450,10,10);
+  light5.setFill(color(255));
+  light6=createShape(ELLIPSE,485,475,10,10);
+  light6.setFill(color(255));
+  light7=createShape(ELLIPSE,490,425,10,10);
+  light7.setFill(color(255));
+  light8=createShape(ELLIPSE,490,375,10,10);
+  light8.setFill(color(255));
+  light9=createShape(ELLIPSE,485,330,10,10);
+  light9.setFill(color(255));
+  light10=createShape(ELLIPSE,435,325,10,10);
+  light10.setFill(color(255));
+  light11=createShape(ELLIPSE,390,325,10,10);
+  light11.setFill(color(255));
+  light12=createShape(ELLIPSE,340,325,10,10);
+  light12.setFill(color(255));
+  light13=createShape(ELLIPSE,290,330,10,10);
+  light13.setFill(color(255));
+  light14=createShape(ELLIPSE,280,375,10,10);
+  light14.setFill(color(255));
+  light15=createShape(ELLIPSE,280,425,10,10);
+  light15.setFill(color(255));
+  engduino.addChild(main);
+  engduino.addChild(light);
+  engduino.addChild(light1);
+  engduino.addChild(light2);
+  engduino.addChild(light3);
+  engduino.addChild(light4);
+  engduino.addChild(light5);
+  engduino.addChild(light6);
+  engduino.addChild(light7);
+  engduino.addChild(light8);
+  engduino.addChild(light9);
+  engduino.addChild(light10);
+  engduino.addChild(light11);
+  engduino.addChild(light12);
+  engduino.addChild(light13);
+  engduino.addChild(light14);
+  engduino.addChild(light15);
   for(int i=0;i<16;i++)
   {
-    lights[i]=new Light(i,200);
+    lights[i]=new Light(i);
   }
-  lights[0].position(290,475);
-  lights[1].position(325,450);
-  lights[2].position(360,410);
-  lights[3].position(390,450);
-  lights[4].position(420,410);
-  lights[5].position(450,450);
-  lights[6].position(485,475);
-  lights[7].position(490,425);
-  lights[8].position(490,375);
-  lights[9].position(485,330);
-  lights[10].position(435,325);
-  lights[11].position(390,325);
-  lights[12].position(340,325);
-  lights[13].position(290,330);
-  lights[14].position(280,375);
-  lights[15].position(280,425);
+  lights[0].sets(light);
+  lights[1].sets(light1);
+  lights[2].sets(light2);
+  lights[3].sets(light3);
+  lights[4].sets(light4);
+  lights[5].sets(light5);
+  lights[6].sets(light6);
+  lights[7].sets(light7);
+  lights[8].sets(light8);
+  lights[9].sets(light9);
+  lights[10].sets(light10);
+  lights[11].sets(light11);
+  lights[12].sets(light12);
+  lights[13].sets(light13);
+  lights[14].sets(light14);
+  lights[15].sets(light15);
   output = createWriter("data.txt");
-  myPort = new Serial(this, Serial.list()[0], 115200);
+  myPort = new Serial(this, Serial.list()[0], 9600);
   myPort.bufferUntil('\n');
 }
 
 void draw() 
 {
-  shape(s, 0, 0);
+  for(int i=0;i<16;i++)
+  {
+    lights[i].changeColour(255,255,255);
+  }
   lights[red].changeColour(255,0,0);
   if(red-1!=green && red-1!=yellow)
   {
@@ -84,7 +136,7 @@ void draw()
   {
     lights[15].changeColour(255,255,255);
   }
-    while(count!=0)
+    if(count!=0)
     {
       if(red==green)
       {
@@ -100,8 +152,10 @@ void draw()
           lights[i].changeColour(255,255,0);
         }
       }
-      
     }
+  //rotateX(x/1.5);
+  //rotateY(y/1.5);
+  shape(engduino);
   output.println(red + "\t" + green + "\t"+ yellow + "\t"+ x + "\t"+ y + "\t"+ z + "\t"+ count +"\t");
 }
 
@@ -145,34 +199,24 @@ class Light
   int colour1;
   int colour2;
   int colour3;
-  int x;
-  int y;
-  Light(int id,int colour)
+  PShape l;
+  Light(int id)
   {
     this.id=id;
-    colour1=colour;
   }
   int id()
   {
     return id;
   }
-  void position(int x,int y,int colour1,int colour2,int colour3)
+  void sets(PShape l)
   {
-    fill(colour1,colour2,colour3);
-    ellipse(x,y,10,10);
-  }
-  void position(int x,int y)
-  {
-    this.x=x;
-    this.y=y;
-    fill(colour1);
-    ellipse(x,y,10,10);
+    this.l=l;
   }
   void changeColour(int colour1,int colour2,int colour3)
   {
     this.colour1=colour1;
     this.colour2=colour2;
     this.colour3=colour3;
-    this.position(this.x,this.y,colour1,colour2,colour3);
+    this.l.setFill(color(colour1,colour2,colour3));
   }
 }
