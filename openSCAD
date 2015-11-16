@@ -1,0 +1,40 @@
+scale(8,0,0)//creates the wheel by minusing of two cubes from each side of the sphere to get the general shape and a cylinder through it to make the hole
+{
+    difference()
+    {
+        color([123,42,56])
+        sphere(20);
+        translate([0,15,0])
+            cube([40,20,40],center=true); 
+        translate([0,-15,0])
+            cube([40,20,40],center=true);
+        rotate([90,0,0])
+        {
+            translate([0,0,-25])
+            cylinder(r=15,h=50);
+        }
+        rotate([0,140,0])
+        cube([3,3,17]);//usb slot
+    }
+}
+clamp(120);
+translate([-30,0,-65])
+{
+    rotate([0,200,0])
+        clamp(50);
+}
+
+module clamp(length,rotation1=0)//creates a brick after which a smaller brick is minused off so as to create a slot where the engduino can be slid in to maintain stability
+{
+    difference()
+    {
+        translate([0,0,length/2])
+        {
+            rotate([rotation1,0,0])
+                cube([23,80,length],center=true);
+        }
+            rotate([rotation1,90,0])
+                #cube([10,10,25],center=true);
+    }
+}
+
